@@ -1,15 +1,15 @@
 import hashlib
-import random
 import string
 import json
-
+import secrets
 
 def gen_salt():
     """ 
-    1. Generate a random string of 16 characters made up of letters and numbers.
+    1. Generate a random string of 32 characters made up of letters, numbers and symbols.
     2. Return the salt.
     """
-    salt = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(16))
+    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
+    salt = ''.join(secrets.choice(chars) for _ in range(32))
     return salt
 
 
