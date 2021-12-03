@@ -11,6 +11,7 @@ Hashes and stores passwords with the salt under a username.
 - Arguments for #Usage.
 - Separate into different files.
 - pip package?
+- look at Argon2id
 
 ## Usage
 ```console
