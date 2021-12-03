@@ -13,7 +13,7 @@ Hashes and stores passwords with the salt under a username.
 - pip package?
 
 ## Usage
-```cmd
+```console
 // Login
 $ passhash login <username> <password>
 
