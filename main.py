@@ -1,42 +1,36 @@
-import hashlib
-import string
 import json
-import secrets
+from argon2 import PasswordHasher, Type
 
 
-def gen_salt():
-    """ 
-    1. Generate a random string of 32 characters made up of letters, numbers and symbols.
-    2. Return the salt.
+def hash_pass(password):
     """
-    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
-    salt = ''.join(secrets.choice(chars) for _ in range(32))
-    return salt
-
-
-def hash_pass(password, salt):
-    """ 
-    1. Create a new object of the class hashlib.sha512().
-    2. It encodes the password string as UTF-8.
-    3. It encodes the salt string as UTF-8.
-    6. It combines both strings and hashes them.
-    7. It returns the full hash string.
+    1. Use the PasswordHasher object, which is the main object used to hash and check passwords.
+    2. Memory cost is 512MB, time cost to 4 seconds, and parallelism to 2.
+    3. The hash length is 32 characters, and the hash type is Argon2ID.
+    4. Hash the password.
+    5. Return the hashed password.
     """
-    hashed = hashlib.sha512(password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
-    full_hash = hashed + salt
-    return full_hash
+    hashed = hasher.hash(password)
+    return hashed
+
+
+def verify_pass(pwhash, password):
+    """
+    1. It calls the function verify_pass with the hash and password to verify.
+    2. If it matches, return True. Otherwise, return False.
+    """
+    if hasher.verify(pwhash, password):
+        return True
+    else:
+        return False
 
 
 def sign_up():
     """ 
-    1. Create a variable called 'username'.
-    2. Get input from the user with 'input'.
-    3. Save the input in the variable 'username'.
-    4. Open the file 'db.json' in read mode.
-    5. Load the contents of the file into a variable called 'db'.
-    6. Check if the username already exists in the database.
-    7. If the username doesn't exist in the database, create a new user with the username and password, with salt.
-     """
+    1. The user enters their username and password.
+    2. The username is checked to see if it already exists.
+    3. If the username does not exist, the user is stored with the Argon2 hash of their password.
+    """
     username = input('Username: ')
     password = input('Password: ')
 
@@ -46,12 +40,13 @@ def sign_up():
     if username in db:
         print('User already exists')
     else:
-        salt = gen_salt()
-        hashed = hash_pass(password, salt)
+        hashed = hash_pass(password)
 
         with open('db.json', 'r') as f:
             db = json.load(f)
-        db[username] = {'password': hashed, 'salt': salt}
+
+        db[username] = {'password': hashed}
+
         with open('db.json', 'w') as f:
             json.dump(db, f)
 
@@ -60,13 +55,11 @@ def sign_up():
 
 def log_in():
     """ 
-    1. Open db.json.
-    2. Load the contents of the file into the variable db.
-    3. Ask the user for the username and password.
-    4. Use the hash_pass function to hash the password.
-    5. Check if the username is in the db.
-    6. If the username is in the db, then check if the password is correct
-    7. Check if the password is correct.
+    1. Opens the json file containing the user database.
+    2. Asks the user for their username and password, and stores them in variables.
+    3. Checks if the username exists in the database.
+    4. If it does, check if the password is correct.
+    5. If it is, print a message saying that the login was successful.
     """
     username = input('Username: ')
     password = input('Password: ')
@@ -75,7 +68,7 @@ def log_in():
         db = json.load(f)
 
     if username in db:
-        if db[username]['password'] == hash_pass(password, db[username]['salt']):
+        if verify_pass(db[username]['password'], password):
             print('Login successful')
         else:
             print('Wrong password')
@@ -84,12 +77,14 @@ def log_in():
 
 
 def remove():
-    """
-    1. Loads the database into a variable called 'db'.
-    2. Opens the database file 'db.json' in write mode.
-    3. Asks the user for their username and password.
-    4. If the username is in the database, it checks the password.
-    5. If the password is correct, it deletes the user from the database.
+    """ 
+    The code above does the following, explained in English:
+    1. Opens the file db.json in read mode.
+    2. Saves the data into a variable.
+    3. Checks if the username is in the database.
+    4. If it is, checks if the password is correct.
+    5. If it is, deletes the user from the database.
+    6. Prints a message saying the user has been removed.
     """
     username = input('Username: ')
     password = input('Password: ')
@@ -98,7 +93,7 @@ def remove():
         db = json.load(f)
 
     if username in db:
-        if db[username]['password'] == hash_pass(password, db[username]['salt']):
+        if verify_pass(db[username]['password'], password):
             del db[username]
             with open('db.json', 'w') as f:
                 json.dump(db, f)
@@ -121,6 +116,19 @@ def list_users():
     for name in db:
         i += 1
         print(f'{i}: {name}')
+
+"""
+Creates a PasswordHasher object.
+Main object used to hash and check passwords.
+"""
+hasher = PasswordHasher(
+    memory_cost=65536,
+    time_cost=4,
+    parallelism=2,
+    hash_len=32,
+    salt_len=16,
+    type=Type.ID
+)
 
 while True:
     """

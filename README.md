@@ -1,4 +1,4 @@
-# SHA-512 Password Hashing
+# Argon2id Password Hashing
 Hashes and stores passwords with the salt under a username.
 
 ## Todo
@@ -6,12 +6,10 @@ Hashes and stores passwords with the salt under a username.
 - - Figure out best requirements to enforce.
 - HIBP API check
 - - Need a key to test with.
-- May be a better way to generate the salt.
 - Actual DB implementation.
 - Arguments for #Usage.
 - Separate into different files.
 - pip package?
-- look at Argon2id
 
 ## Usage
 ```console
