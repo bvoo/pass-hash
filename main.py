@@ -27,7 +27,6 @@ def hash_pass(password, salt):
     return full_hash
 
 
-
 def sign_up():
     """ 
     1. Create a variable called 'username'.
