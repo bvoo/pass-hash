@@ -9,8 +9,6 @@ Hashes and stores passwords with the salt under a username.
 - May be a better way to generate the salt.
 - Actual DB implementation.
 - Arguments for #Usage.
-- Remove users.
-- List users.
 - Separate into different files.
 - pip package?
 

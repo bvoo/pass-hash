@@ -83,6 +83,46 @@ def log_in():
     else:
         print('User not found')
 
+
+def remove():
+    """
+    1. Loads the database into a variable called 'db'.
+    2. Opens the database file 'db.json' in write mode.
+    3. Asks the user for their username and password.
+    4. If the username is in the database, it checks the password.
+    5. If the password is correct, it deletes the user from the database.
+    """
+    username = input('Username: ')
+    password = input('Password: ')
+
+    with open('db.json', 'r') as f:
+        db = json.load(f)
+
+    if username in db:
+        if db[username]['password'] == hash_pass(password, db[username]['salt']):
+            del db[username]
+            with open('db.json', 'w') as f:
+                json.dump(db, f)
+            print('User removed successfully')
+        else:
+            print('Wrong password')
+    else:
+        print('User not found')
+
+
+def list_users():
+    """
+    1. Loads the database into a variable called 'db'.
+    2. Opens the database file 'db.json' in read mode.
+    3. Prints the list of users.
+    """
+    with open('db.json', 'r') as f:
+        db = json.load(f)
+    i = 0
+    for name in db:
+        i += 1
+        print(f'{i}: {name}')
+
 while True:
     """
     1. Asks the user to input the login or signup.
@@ -91,13 +131,19 @@ while True:
     4. If the input is signup, it runs the signup function.
     5. It repeats the loop.
     """
-    r = input('Login or Signup?\n')
+    r = input('Login, Signup, Remove or List?\n')
     r = r.lower()
     if r == 'login':
         log_in()
         break
     elif r == 'signup':
         sign_up()
+        break
+    elif r == 'remove':
+        remove()
+        break
+    elif r == 'list':
+        list_users()
         break
     else:
         print('Invalid input')
