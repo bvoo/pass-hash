@@ -3,6 +3,7 @@ import string
 import json
 import secrets
 
+
 def gen_salt():
     """ 
     1. Generate a random string of 32 characters made up of letters, numbers and symbols.
@@ -24,6 +25,7 @@ def hash_pass(password, salt):
     hashed = hashlib.sha512(password.encode('utf-8') + salt.encode('utf-8')).hexdigest()
     full_hash = hashed + salt
     return full_hash
+
 
 
 def sign_up():
@@ -80,7 +82,6 @@ def log_in():
             print('Wrong password')
     else:
         print('User not found')
-
 
 while True:
     """
